@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "866964294868",
+    "project_id": "silaturrahmi-1f4fd",
+    "storage_bucket": "silaturrahmi-1f4fd.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:866964294868:android:703331656fd364789cbf41",
+        "android_client_info": {
+          "package_name": "com.silaturrahmi.silaturrahmi"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "866964294868-deh17a9qrk0bdj4a1fmhl57p9mhb9leq.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.silaturrahmi.silaturrahmi",
+            "certificate_hash": "9947dd18bbcf06c798ec773bd9a7d383f5b40c0c"
+          }
+        },
+        {
+          "client_id": "866964294868-p8sdi506b3b4eocgnk6om3lv46dno9in.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBFkVd4lmKlmFF_YoFTntFrxuDZ59nVb4I"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "866964294868-p8sdi506b3b4eocgnk6om3lv46dno9in.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
