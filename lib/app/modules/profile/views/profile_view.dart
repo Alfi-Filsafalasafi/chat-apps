@@ -41,21 +41,26 @@ class ProfileView extends GetView<ProfileController> {
                       margin: EdgeInsets.fromLTRB(0, 15, 0, 15),
                       width: 125,
                       height: 125,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(100),
-                        color: Colors.grey,
-                        image: DecorationImage(
-                          image: AssetImage("assets/logo/noimage.png"),
-                        ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(200),
+                        child: authC.user.photoURL! == "noimage"
+                            ? Image.asset(
+                                "asset/images/noimage.png",
+                                fit: BoxFit.cover,
+                              )
+                            : Image.network(
+                                authC.user.photoURL!,
+                                fit: BoxFit.cover,
+                              ),
                       ),
                     ),
                   ),
                   Text(
-                    "Alfi Filsafalasafi",
+                    "${authC.user.name}",
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
                   ),
                   Text(
-                    "alfifilsafat@gmail.com",
+                    "${authC.user.email}",
                     style: TextStyle(fontSize: 16, color: Colors.grey),
                   )
                 ],

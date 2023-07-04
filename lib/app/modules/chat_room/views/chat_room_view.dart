@@ -4,10 +4,11 @@ import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
 
+import '../../../controllers/auth_controller.dart';
 import '../controllers/chat_room_controller.dart';
 
 class ChatRoomView extends GetView<ChatRoomController> {
-  get textEditingController => null;
+  final authC = Get.find<AuthController>();
 
   @override
   Widget build(BuildContext context) {

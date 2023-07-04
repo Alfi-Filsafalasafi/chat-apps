@@ -12,8 +12,8 @@ class splashScreen extends StatelessWidget {
       home: Scaffold(
         body: Center(
             child: Container(
-          width: Get.width * 0.5,
-          height: Get.width * 0.5,
+          width: Get.width * 0.7,
+          height: Get.width * 0.7,
           child: Lottie.asset("assets/lottie/hello.json"),
         )),
       ),

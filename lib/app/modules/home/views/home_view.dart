@@ -2,10 +2,13 @@ import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
 
+import '../../../controllers/auth_controller.dart';
 import '../../../routes/app_pages.dart';
 import '../controllers/home_controller.dart';
 
 class HomeView extends GetView<HomeController> {
+  final authC = Get.find<AuthController>();
+
   final List<Widget> myChats = List.generate(
     20,
     (index) => ListTile(
@@ -54,12 +57,17 @@ class HomeView extends GetView<HomeController> {
                   child: InkWell(
                     borderRadius: BorderRadius.circular(50),
                     onTap: () => Get.toNamed(Routes.PROFILE),
-                    child: Padding(
-                      padding: const EdgeInsets.all(5.0),
-                      child: Icon(
-                        Icons.person,
-                        size: 26,
-                        color: Colors.white,
+                    child: Container(
+                      width: 36,
+                      height: 36,
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(200),
+                        child: authC.user.photoURL == "noimage"
+                            ? Image.asset("assets/image/noimage")
+                            : Image.network(
+                                authC.user.photoURL!,
+                                fit: BoxFit.cover,
+                              ),
                       ),
                     ),
                   ),
