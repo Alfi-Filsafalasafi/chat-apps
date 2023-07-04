@@ -60,14 +60,16 @@ class HomeView extends GetView<HomeController> {
                     child: Container(
                       width: 36,
                       height: 36,
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(200),
-                        child: authC.user.photoURL == "noimage"
-                            ? Image.asset("assets/image/noimage")
-                            : Image.network(
-                                authC.user.photoURL!,
-                                fit: BoxFit.cover,
-                              ),
+                      child: Obx(
+                        () => ClipRRect(
+                          borderRadius: BorderRadius.circular(200),
+                          child: authC.user.value.photoURL == "noimage"
+                              ? Image.asset("assets/image/noimage")
+                              : Image.network(
+                                  authC.user.value.photoURL!,
+                                  fit: BoxFit.cover,
+                                ),
+                        ),
                       ),
                     ),
                   ),

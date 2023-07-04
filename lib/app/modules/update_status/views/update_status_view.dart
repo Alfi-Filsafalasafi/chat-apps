@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
+import 'package:silaturrahmi/app/controllers/auth_controller.dart';
 
 import '../controllers/update_status_controller.dart';
 
 class UpdateStatusView extends GetView<UpdateStatusController> {
-  const UpdateStatusView({Key? key}) : super(key: key);
+  final authC = Get.find<AuthController>();
   @override
   Widget build(BuildContext context) {
+    controller.statusC.text = authC.user.value.status!;
     return Scaffold(
         appBar: AppBar(
           title: const Text('Update Status'),
@@ -18,6 +20,7 @@ class UpdateStatusView extends GetView<UpdateStatusController> {
           child: Column(
             children: [
               TextField(
+                controller: controller.statusC,
                 decoration: InputDecoration(
                   labelText: "Status",
                   border: OutlineInputBorder(
@@ -33,7 +36,7 @@ class UpdateStatusView extends GetView<UpdateStatusController> {
               Container(
                 width: Get.width,
                 child: ElevatedButton(
-                  onPressed: () {},
+                  onPressed: () => authC.changeStatus(controller.statusC.text),
                   child: Text("update"),
                   style: ElevatedButton.styleFrom(
                       shape: RoundedRectangleBorder(

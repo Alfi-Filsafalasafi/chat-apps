@@ -43,26 +43,29 @@ class ProfileView extends GetView<ProfileController> {
                       height: 125,
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(200),
-                        child: authC.user.photoURL! == "noimage"
+                        child: authC.user.value.photoURL! == "noimage"
                             ? Image.asset(
                                 "asset/images/noimage.png",
                                 fit: BoxFit.cover,
                               )
                             : Image.network(
-                                authC.user.photoURL!,
+                                authC.user.value.photoURL!,
                                 fit: BoxFit.cover,
                               ),
                       ),
                     ),
                   ),
-                  Text(
-                    "${authC.user.name}",
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+                  Obx(
+                    () => Text(
+                      "${authC.user.value.name!}",
+                      style:
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+                    ),
                   ),
                   Text(
-                    "${authC.user.email}",
+                    "${authC.user.value.email!}",
                     style: TextStyle(fontSize: 16, color: Colors.grey),
-                  )
+                  ),
                 ],
               ),
             ),

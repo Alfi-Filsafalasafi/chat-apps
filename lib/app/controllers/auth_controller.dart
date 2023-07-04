@@ -16,7 +16,7 @@ class AuthController extends GetxController {
   GoogleSignInAccount? _currentUser;
   UserCredential? userCredential;
 
-  UserModel user = UserModel();
+  var user = UserModel().obs;
 
   FirebaseFirestore firebase = FirebaseFirestore.instance;
 
@@ -68,15 +68,17 @@ class AuthController extends GetxController {
         final currentUser = await users.doc(userCredential!.user!.email).get();
         final currUserData = currentUser.data() as Map<String, dynamic>;
 
-        user = UserModel(
-          uid: currUserData["uid"],
-          name: currUserData["name"],
-          email: currUserData["email"],
-          status: currUserData["status"],
-          photoURL: currUserData["photoURL"],
-          creationTime: currUserData["creationTime"],
-          lastSignInTime: currUserData["lastSignInTime"],
-          updatedTime: currUserData["updatedTime"],
+        user(
+          UserModel(
+            uid: currUserData["uid"],
+            name: currUserData["name"],
+            email: currUserData["email"],
+            status: currUserData["status"],
+            photoURL: currUserData["photoURL"],
+            creationTime: currUserData["creationTime"],
+            lastSignInTime: currUserData["lastSignInTime"],
+            updatedTime: currUserData["updatedTime"],
+          ),
         );
 
         return true;
@@ -153,15 +155,17 @@ class AuthController extends GetxController {
         final currentUser = await users.doc(userCredential!.user!.email).get();
         final currUserData = currentUser.data() as Map<String, dynamic>;
 
-        user = UserModel(
-          uid: currUserData["uid"],
-          name: currUserData["name"],
-          email: currUserData["email"],
-          status: currUserData["status"],
-          photoURL: currUserData["photoURL"],
-          creationTime: currUserData["creationTime"],
-          lastSignInTime: currUserData["lastSignInTime"],
-          updatedTime: currUserData["updatedTime"],
+        user(
+          UserModel(
+            uid: currUserData["uid"],
+            name: currUserData["name"],
+            email: currUserData["email"],
+            status: currUserData["status"],
+            photoURL: currUserData["photoURL"],
+            creationTime: currUserData["creationTime"],
+            lastSignInTime: currUserData["lastSignInTime"],
+            updatedTime: currUserData["updatedTime"],
+          ),
         );
 
         isAuth.value = true;
@@ -178,5 +182,52 @@ class AuthController extends GetxController {
     await _googleSignIn.disconnect();
     await _googleSignIn.signOut();
     Get.offAllNamed(Routes.LOGIN);
+  }
+
+  void changeProfile(String name, String status) async {
+    CollectionReference users = firebase.collection('users');
+
+    String dateNow = DateTime.now().toIso8601String();
+
+    //update authentication
+    users.doc(userCredential!.user!.email).update({
+      "name": name,
+      "status": status,
+      "updatedTime": dateNow,
+    });
+
+    //update model user
+    user.update((user) {
+      user!.name = name;
+      user.status = status;
+      user.lastSignInTime = dateNow;
+    });
+
+    user.refresh();
+    Get.defaultDialog(
+        title: "Berhasil", middleText: "Anda sudah merubah profile anda");
+  }
+
+  void changeStatus(String status) async {
+    CollectionReference users = firebase.collection('users');
+
+    String dateNow = DateTime.now().toIso8601String();
+
+    //update authentication
+    users.doc(userCredential!.user!.email).update({
+      "status": status,
+      "updatedTime": dateNow,
+    });
+
+    //update model user
+    user.update((user) {
+      user!.status = status;
+      user.lastSignInTime = dateNow;
+    });
+
+    user.refresh();
+
+    Get.defaultDialog(
+        title: "Berhasil", middleText: "Anda sudah merubah profile anda");
   }
 }
