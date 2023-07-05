@@ -1,0 +1,25 @@
+{
+    "uid": "VWQm7joAFXT7d7kd16uhk3a4vR32",
+    "name" : "Alfi Filsafat",
+    "email" : "alfifilsafat@gmail.com",
+    "status" : "",
+    "keyName" : "A",
+    "creationTime" : "2023-07-04T06:22:03.898Z", 
+    "lastSignInTime" : "2023-07-05T04:16:24.408Z",
+    "updatedTime" : "2023-07-05T10:39:45.683488",
+    "photoURL" : "https://lh3.googleusercontent.com/a/AAcHTtd7PJipWbvqq8aY80QfAiY64gbKPSEWKPOX0CEDMRpBjPQ=s96-c",
+    "chats": [
+        {
+            "connections" :"filsafalasafi@gmail.com",
+            "chat_id": "RO337DaJnITOcfDgo2ENh8IPanVs",
+            "lastTime": "2021-08-25T13:29:02.748721",
+            "total_unread": 0
+        },
+        {
+            "connection": "daniel@gmail.com",
+            "chat_id": "JnITOcfDgo2ENh8IPanVsRO337Da",
+            "lastTime": "2021-09-25T13:28:59.748721",
+            "total_unread": 0
+        }
+    ]
+}

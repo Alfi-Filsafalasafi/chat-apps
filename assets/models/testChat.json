@@ -1,0 +1,22 @@
+{
+    "connections": [
+        "alfifilsafat@gmail.com",
+        "filsafalasafi@gmail.com"
+    ],
+    "chat": [
+        {
+            "pengirim": "alfifilsafat@gmail.com",
+            "penerima": "filsafalasafi@gmail.com",
+            "pesan": "Halo fi, apa kabar ?",
+            "time": "2021-08-25T13:28:59.748721",
+            "isRead":true
+        },
+        {
+            "pengirim": "filsafalasafi@gmail.com",
+            "penerima": "alfifilsafat@gmail.com",
+            "pesan": "Baik Afat, kamu sendiri gimana ?",
+            "time": "2021-08-25T13:29:02.748721",
+            "isRead":false
+        }
+    ]
+}
