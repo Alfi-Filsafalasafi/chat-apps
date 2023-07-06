@@ -417,6 +417,30 @@ class AuthController extends GetxController {
         user.refresh();
       }
     }
+
+    //mengupdate isread menjadi true
+    final updateIsRead = await chats
+        .doc(chat_id)
+        .collection("chat")
+        .where("isRead", isEqualTo: false)
+        .where("penerima", isEqualTo: _currentUser!.email)
+        .get();
+
+    updateIsRead.docs.forEach((element) async {
+      await chats
+          .doc(chat_id)
+          .collection("chat")
+          .doc(element.id)
+          .update({"isRead": true});
+    });
+
+    //mengupdate total_unread menjadi 0
+    await users
+        .doc(_currentUser!.email)
+        .collection("chats")
+        .doc(chat_id)
+        .update({"total_unread": 0});
+
     Get.toNamed(Routes.CHAT_ROOM, arguments: {
       "chat_id": "$chat_id",
       "friendEmail": friendEmail,

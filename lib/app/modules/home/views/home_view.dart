@@ -77,14 +77,10 @@ class HomeView extends GetView<HomeController> {
                               var data = snapshot2.data!.data();
 
                               return ListTile(
-                                onTap: () => Get.toNamed(
-                                  Routes.CHAT_ROOM,
-                                  arguments: {
-                                    "chat_id": "${allChat[index].id}",
-                                    "friendEmail":
-                                        "${allChat[index]["connection"]}",
-                                  },
-                                ),
+                                onTap: () => controller.goToChatRoom(
+                                    "${allChat[index].id}",
+                                    authC.user.value.email!,
+                                    "${allChat[index]["connection"]}"),
                                 leading: CircleAvatar(
                                   radius: 25,
                                   backgroundColor: Colors.black12,
