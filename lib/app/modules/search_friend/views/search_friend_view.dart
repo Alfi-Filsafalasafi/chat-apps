@@ -4,7 +4,6 @@ import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
 import 'package:silaturrahmi/app/controllers/auth_controller.dart';
 
-import '../../../routes/app_pages.dart';
 import '../controllers/search_friend_controller.dart';
 
 class SearchFriendView extends GetView<SearchFriendController> {

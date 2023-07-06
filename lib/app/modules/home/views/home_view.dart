@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
@@ -9,28 +10,31 @@ import '../controllers/home_controller.dart';
 class HomeView extends GetView<HomeController> {
   final authC = Get.find<AuthController>();
 
-  final List<Widget> myChats = List.generate(
-    20,
-    (index) => ListTile(
+  List dataTemp = List.generate(
+    10,
+    (i) => ListTile(
       onTap: () => Get.toNamed(Routes.CHAT_ROOM),
       leading: CircleAvatar(
         radius: 25,
         backgroundColor: Colors.black12,
-        child: Image.asset("assets/logo/noimage.png"),
+        child: ClipRRect(
+            borderRadius: BorderRadius.circular(200),
+            child: Image.asset("assets/logo/noimage.png")),
       ),
       title: Text(
-        "Orang ke ${index + 1}",
+        "Orang ke ${i + 1}",
         style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
       ),
       subtitle: Text(
-        "Status orang ke ${index + 1}",
+        "Status orang ke ${i + 1}",
         style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
       ),
       trailing: Chip(
-        label: Text("3"),
+        label: Text("1"),
       ),
     ),
   ).reversed.toList();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -79,11 +83,77 @@ class HomeView extends GetView<HomeController> {
           ),
           Expanded(
             child: ListView.builder(
-              padding: EdgeInsets.only(top: 5),
-              itemCount: myChats.length,
-              itemBuilder: (context, index) => myChats[index],
+              itemCount: dataTemp.length,
+              padding: EdgeInsets.zero,
+              itemBuilder: (context, index) => dataTemp[index],
             ),
           ),
+          // Expanded(
+          //   child: StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+          //       stream: controller.chatStream(authC.user.value.email!),
+          //       builder: (context, snapshot) {
+          //         if (snapshot.connectionState == ConnectionState.active) {
+          //           var allChat = (snapshot.data!.data()
+          //               as Map<String, dynamic>)["chats"] as List;
+          //           return ListView.builder(
+          //             padding: EdgeInsets.zero,
+          //             itemCount: allChat.length,
+          //             itemBuilder: (context, index) {
+          //               return StreamBuilder<
+          //                   DocumentSnapshot<Map<String, dynamic>>>(
+          //                 stream: controller
+          //                     .friendStream(allChat[index]["connection"]),
+          //                 builder: (context, snapshot2) {
+          //                   if (snapshot2.connectionState ==
+          //                       ConnectionState.active) {
+          //                     var data = snapshot2.data!.data();
+          //                     return ListTile(
+          //                       onTap: () => Get.toNamed(Routes.CHAT_ROOM),
+          //                       leading: CircleAvatar(
+          //                         radius: 25,
+          //                         backgroundColor: Colors.black12,
+          //                         child: ClipRRect(
+          //                           borderRadius: BorderRadius.circular(200),
+          //                           child: data!["photoURL"] == "noimage"
+          //                               ? Image.asset("assets/logo/noimage.png")
+          //                               : Image.network("${data["photoURL"]}"),
+          //                         ),
+          //                       ),
+          //                       title: Text(
+          //                         "${data["name"]}",
+          //                         style: TextStyle(
+          //                             fontSize: 20,
+          //                             fontWeight: FontWeight.w600),
+          //                       ),
+          //                       subtitle: data["status"] != ""
+          //                           ? Text(
+          //                               "${data["status"]}",
+          //                               style: TextStyle(
+          //                                   fontSize: 12,
+          //                                   fontWeight: FontWeight.w600),
+          //                             )
+          //                           : null,
+          //                       trailing: allChat[index]["total_unread"] == 0
+          //                           ? SizedBox()
+          //                           : Chip(
+          //                               label: Text(
+          //                                   "${allChat[index]["total_unread"]}"),
+          //                             ),
+          //                     );
+          //                   }
+          //                   return Center(
+          //                     child: CircularProgressIndicator(),
+          //                   );
+          //                 },
+          //               );
+          //             },
+          //           );
+          //         }
+          //         return Center(
+          //           child: CircularProgressIndicator(),
+          //         );
+          //       }),
+          // ),
         ],
       ),
       floatingActionButton: FloatingActionButton(
