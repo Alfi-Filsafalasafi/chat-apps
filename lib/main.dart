@@ -4,10 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:silaturrahmi/app/controllers/auth_controller.dart';
-import 'package:silaturrahmi/app/utils/error_page.dart';
 
 import 'app/routes/app_pages.dart';
-import 'app/utils/loading_page.dart';
 import 'app/utils/splash_screen.dart';
 
 void main() async {

@@ -10,31 +10,6 @@ import '../controllers/home_controller.dart';
 class HomeView extends GetView<HomeController> {
   final authC = Get.find<AuthController>();
 
-  List dataTemp = List.generate(
-    10,
-    (i) => ListTile(
-      onTap: () => Get.toNamed(Routes.CHAT_ROOM),
-      leading: CircleAvatar(
-        radius: 25,
-        backgroundColor: Colors.black12,
-        child: ClipRRect(
-            borderRadius: BorderRadius.circular(200),
-            child: Image.asset("assets/logo/noimage.png")),
-      ),
-      title: Text(
-        "Orang ke ${i + 1}",
-        style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
-      ),
-      subtitle: Text(
-        "Status orang ke ${i + 1}",
-        style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
-      ),
-      trailing: Chip(
-        label: Text("1"),
-      ),
-    ),
-  ).reversed.toList();
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -82,78 +57,82 @@ class HomeView extends GetView<HomeController> {
             ),
           ),
           Expanded(
-            child: ListView.builder(
-              itemCount: dataTemp.length,
-              padding: EdgeInsets.zero,
-              itemBuilder: (context, index) => dataTemp[index],
+            child: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+              stream: controller.chatStream(authC.user.value.email!),
+              builder: (context, snapshot1) {
+                print(snapshot1);
+                if (snapshot1.connectionState == ConnectionState.active) {
+                  var allChat = snapshot1.data!.docs;
+                  return ListView.builder(
+                      padding: EdgeInsets.zero,
+                      itemCount: allChat.length,
+                      itemBuilder: (context, index) {
+                        return StreamBuilder<
+                            DocumentSnapshot<Map<String, dynamic>>>(
+                          stream: controller
+                              .friendStream(allChat[index]["connection"]),
+                          builder: (context, snapshot2) {
+                            if (snapshot2.connectionState ==
+                                ConnectionState.active) {
+                              var data = snapshot2.data!.data();
+
+                              return ListTile(
+                                onTap: () => Get.toNamed(
+                                  Routes.CHAT_ROOM,
+                                  arguments: {
+                                    "chat_id": "${allChat[index].id}",
+                                    "friendEmail":
+                                        "${allChat[index]["connection"]}",
+                                  },
+                                ),
+                                leading: CircleAvatar(
+                                  radius: 25,
+                                  backgroundColor: Colors.black12,
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(100),
+                                    child: data!["photoURL"] == "noimage"
+                                        ? Image.asset("assets/logo/noimage.png")
+                                        : Image.network("${data["photoURL"]}"),
+                                  ),
+                                ),
+                                title: Text(
+                                  "${data["name"]}",
+                                  style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.w600),
+                                ),
+                                subtitle: data["status"] != ""
+                                    ? Text(
+                                        "${data["status"]}",
+                                        style: TextStyle(
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.w600),
+                                      )
+                                    : null,
+                                trailing: allChat[index]["total_unread"] == 0
+                                    ? SizedBox()
+                                    : Chip(
+                                        backgroundColor: Colors.blue,
+                                        label: Text(
+                                          "${allChat[index]["total_unread"]}",
+                                          style: TextStyle(color: Colors.white),
+                                        ),
+                                      ),
+                              );
+                            }
+                            return Center(
+                              child: CircularProgressIndicator(),
+                            );
+                          },
+                        );
+                      });
+                }
+                return Center(
+                  child: CircularProgressIndicator(),
+                );
+              },
             ),
           ),
-          // Expanded(
-          //   child: StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
-          //       stream: controller.chatStream(authC.user.value.email!),
-          //       builder: (context, snapshot) {
-          //         if (snapshot.connectionState == ConnectionState.active) {
-          //           var allChat = (snapshot.data!.data()
-          //               as Map<String, dynamic>)["chats"] as List;
-          //           return ListView.builder(
-          //             padding: EdgeInsets.zero,
-          //             itemCount: allChat.length,
-          //             itemBuilder: (context, index) {
-          //               return StreamBuilder<
-          //                   DocumentSnapshot<Map<String, dynamic>>>(
-          //                 stream: controller
-          //                     .friendStream(allChat[index]["connection"]),
-          //                 builder: (context, snapshot2) {
-          //                   if (snapshot2.connectionState ==
-          //                       ConnectionState.active) {
-          //                     var data = snapshot2.data!.data();
-          //                     return ListTile(
-          //                       onTap: () => Get.toNamed(Routes.CHAT_ROOM),
-          //                       leading: CircleAvatar(
-          //                         radius: 25,
-          //                         backgroundColor: Colors.black12,
-          //                         child: ClipRRect(
-          //                           borderRadius: BorderRadius.circular(200),
-          //                           child: data!["photoURL"] == "noimage"
-          //                               ? Image.asset("assets/logo/noimage.png")
-          //                               : Image.network("${data["photoURL"]}"),
-          //                         ),
-          //                       ),
-          //                       title: Text(
-          //                         "${data["name"]}",
-          //                         style: TextStyle(
-          //                             fontSize: 20,
-          //                             fontWeight: FontWeight.w600),
-          //                       ),
-          //                       subtitle: data["status"] != ""
-          //                           ? Text(
-          //                               "${data["status"]}",
-          //                               style: TextStyle(
-          //                                   fontSize: 12,
-          //                                   fontWeight: FontWeight.w600),
-          //                             )
-          //                           : null,
-          //                       trailing: allChat[index]["total_unread"] == 0
-          //                           ? SizedBox()
-          //                           : Chip(
-          //                               label: Text(
-          //                                   "${allChat[index]["total_unread"]}"),
-          //                             ),
-          //                     );
-          //                   }
-          //                   return Center(
-          //                     child: CircularProgressIndicator(),
-          //                   );
-          //                 },
-          //               );
-          //             },
-          //           );
-          //         }
-          //         return Center(
-          //           child: CircularProgressIndicator(),
-          //         );
-          //       }),
-          // ),
         ],
       ),
       floatingActionButton: FloatingActionButton(

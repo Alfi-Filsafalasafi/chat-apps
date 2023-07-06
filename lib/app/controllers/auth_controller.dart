@@ -30,7 +30,7 @@ class AuthController extends GetxController {
 
     //menguba isSkipIntro menjadi true
     final box = GetStorage();
-    if (box.read('skipIntro') != null || box.read('skipIntro') == true) {
+    if (box.read('isSkipIntro') != null || box.read('isSkipIntro') == true) {
       isSkipintro.value = true;
     }
   }
@@ -55,6 +55,13 @@ class AuthController extends GetxController {
             .then((value) => userCredential = value);
 
         print("User Credential $userCredential");
+        //menyimpan status user bahwa pernah melakukan login, sehingga skip untuk introduction page
+        final box = GetStorage();
+        if (box.read('isSkipIntro') != null) {
+          box.remove('isSkipIntro');
+        }
+        box.write('isSkipIntro', true);
+        print("is skip intro di autoLogin = $isSkipintro");
 
         //masukkan data user ke firebase
         CollectionReference users = firebase.collection('users');
@@ -68,18 +75,9 @@ class AuthController extends GetxController {
         final currentUser = await users.doc(userCredential!.user!.email).get();
         final currUserData = currentUser.data() as Map<String, dynamic>;
 
-        // user(UsersModel.fromJson(currUserData));
-        user(UsersModel(
-          creationTime: currUserData["creationTime"],
-          email: currUserData["email"],
-          keyName: currUserData["keyName"],
-          name: currUserData["name"],
-          lastSignInTime: currUserData["lastSignInTime"],
-          photoURL: currUserData["photoURL"],
-          status: currUserData["status"],
-          updatedTime: currUserData["updatedTime"],
-          uid: currUserData["uid"],
-        ));
+        //TODO : Fix List
+        user(UsersModel.fromJson(currUserData));
+        user.refresh();
 
         final listChats = await users
             .doc(userCredential!.user!.email)
@@ -107,6 +105,7 @@ class AuthController extends GetxController {
           });
         }
 
+        user.refresh();
         return true;
       }
       return false;
@@ -147,10 +146,10 @@ class AuthController extends GetxController {
 
         //menyimpan status user bahwa pernah melakukan login, sehingga skip untuk introduction page
         final box = GetStorage();
-        if (box.read('skipIntro') != null) {
-          box.remove('skipIntro');
+        if (box.read('isSkipIntro') != null) {
+          box.remove('isSkipIntro');
         }
-        box.write('skipIntro', true);
+        box.write('isSkipIntro', true);
 
         //masukkan data user ke firebase
         CollectionReference users = firebase.collection('users');
@@ -185,18 +184,8 @@ class AuthController extends GetxController {
         final currUserData = currentUser.data() as Map<String, dynamic>;
 
         //TODO : Fix List
-        // user(UsersModel.fromJson(currUserData));
-        user(UsersModel(
-          creationTime: currUserData["creationTime"],
-          email: currUserData["email"],
-          keyName: currUserData["keyName"],
-          name: currUserData["name"],
-          lastSignInTime: currUserData["lastSignInTime"],
-          photoURL: currUserData["photoURL"],
-          status: currUserData["status"],
-          updatedTime: currUserData["updatedTime"],
-          uid: currUserData["uid"],
-        ));
+        user(UsersModel.fromJson(currUserData));
+        user.refresh();
 
         final listChats = await users
             .doc(userCredential!.user!.email)
@@ -223,6 +212,8 @@ class AuthController extends GetxController {
             user!.chats = [];
           });
         }
+
+        user.refresh();
 
         isAuth.value = true;
         Get.offAllNamed(Routes.HOME);
@@ -384,8 +375,9 @@ class AuthController extends GetxController {
             _currentUser!.email,
             friendEmail,
           ],
-          "chat": [],
         });
+
+        await chats.doc(newChat.id).collection("chat");
 
         await users
             .doc(_currentUser!.email)
@@ -400,17 +392,16 @@ class AuthController extends GetxController {
             await users.doc(_currentUser!.email).collection("chats").get();
 
         if (listChats.docs.length != 0) {
-          List<ChatUsers> dataListChats = List<ChatUsers>.empty();
+          List<ChatUsers> dataListChats = [];
           listChats.docs.forEach((element) {
             var dataDocChat = element.data();
             var dataDocChatId = element.id;
-            print(dataDocChat);
-            // dataListChats.add(ChatUsers(
-            //   chatId: dataDocChatId,
-            //   connection: dataDocChat["connection"],
-            //   lastTime: dataDocChat["lastTime"],
-            //   total_unread: dataDocChat["total_unread"],
-            // ));
+            dataListChats.add(ChatUsers(
+              chatId: dataDocChatId,
+              connection: dataDocChat["connection"],
+              lastTime: dataDocChat["lastTime"],
+              total_unread: dataDocChat["total_unread"],
+            ));
           });
           user.update((user) {
             user!.chats = dataListChats;
@@ -426,6 +417,9 @@ class AuthController extends GetxController {
         user.refresh();
       }
     }
-    Get.toNamed(Routes.CHAT_ROOM, arguments: chat_id);
+    Get.toNamed(Routes.CHAT_ROOM, arguments: {
+      "chat_id": "$chat_id",
+      "friendEmail": friendEmail,
+    });
   }
 }

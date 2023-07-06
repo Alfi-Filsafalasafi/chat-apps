@@ -96,9 +96,10 @@ class ChatRoomView extends GetView<ChatRoomController> {
                     radius: 25,
                     backgroundColor: Colors.blue,
                     child: InkWell(
-                      onTap: () {
-                        print("hallo");
-                      },
+                      onTap: () => controller.newChat(
+                          authC.user.value.email!,
+                          Get.arguments as Map<String, dynamic>,
+                          controller.chatC.text),
                       child: Icon(
                         Icons.send,
                         color: Colors.white,
