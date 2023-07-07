@@ -1,14 +1,19 @@
+import 'dart:async';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/foundation.dart' as foundation;
 import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 
 import '../../../controllers/auth_controller.dart';
 import '../controllers/chat_room_controller.dart';
 
 class ChatRoomView extends GetView<ChatRoomController> {
   final authC = Get.find<AuthController>();
+  final String chat_id = (Get.arguments as Map<String, dynamic>)["chat_id"];
 
   @override
   Widget build(BuildContext context) {
@@ -16,28 +21,75 @@ class ChatRoomView extends GetView<ChatRoomController> {
         appBar: AppBar(
           centerTitle: false,
           toolbarHeight: 70,
-          title: Row(
-            children: [
-              CircleAvatar(
-                radius: 25,
-                backgroundColor: Colors.grey,
-                child: Image.asset("assets/logo/noimage.png"),
-              ),
-              SizedBox(width: 10),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Alfi Filsafalasafi',
-                    style: TextStyle(fontSize: 18),
-                  ),
-                  Text(
-                    'status saya',
-                    style: TextStyle(fontSize: 15),
-                  )
-                ],
-              ),
-            ],
+          leadingWidth: 100,
+          leading: InkWell(
+            onTap: () => Get.back(),
+            borderRadius: BorderRadius.circular(100),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                SizedBox(width: 5),
+                Icon(
+                  Icons.arrow_back,
+                  color: Colors.white,
+                ),
+                SizedBox(width: 5),
+                CircleAvatar(
+                  radius: 25,
+                  backgroundColor: Colors.grey,
+                  child: StreamBuilder<DocumentSnapshot<Object?>>(
+                      stream: controller.streamFriendData(
+                        (Get.arguments as Map<String, dynamic>)["friendEmail"],
+                      ),
+                      builder: (context, snapFriendUser) {
+                        if (snapFriendUser.connectionState ==
+                            ConnectionState.active) {
+                          var dataFriend = snapFriendUser.data!.data()
+                              as Map<String, dynamic>;
+                          if (dataFriend["photoURL"] == "noimage") {
+                            return ClipRRect(
+                                borderRadius: BorderRadius.circular(50),
+                                child: Image.asset("assets/logo/noimage.png"));
+                          } else {
+                            return ClipRRect(
+                                borderRadius: BorderRadius.circular(50),
+                                child: Image.network(dataFriend["photoURL"]));
+                          }
+                        }
+                        return ClipRRect(
+                            borderRadius: BorderRadius.circular(50),
+                            child: Image.asset("assets/logo/noimage.png"));
+                      }),
+                ),
+              ],
+            ),
+          ),
+          title: StreamBuilder<DocumentSnapshot<Object?>>(
+            stream: controller.streamFriendData(
+              (Get.arguments as Map<String, dynamic>)["friendEmail"],
+            ),
+            builder: (context, snapFriendUser) {
+              if (snapFriendUser.connectionState == ConnectionState.active) {
+                var dataFriend =
+                    snapFriendUser.data!.data() as Map<String, dynamic>;
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      '${dataFriend["name"]}',
+                      style: TextStyle(fontSize: 18),
+                    ),
+                    dataFriend["status"] != ""
+                        ? Text(
+                            '${dataFriend["status"]}',
+                            style: TextStyle(fontSize: 15),
+                          )
+                        : Text('', style: TextStyle(fontSize: 0)),
+                  ],
+                );
+              }
+              return SizedBox();
+            },
           ),
         ),
         body: WillPopScope(
@@ -54,13 +106,93 @@ class ChatRoomView extends GetView<ChatRoomController> {
               Expanded(
                 child: Container(
                   width: Get.width,
-                  child: ListView(
-                    children: [
-                      itemChat(isSender: true),
-                      itemChat(isSender: false),
-                    ],
+                  child: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+                    stream: controller.streamChat(chat_id),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.active) {
+                        print(snapshot.data);
+                        var allChatsBerdua = snapshot.data!.docs;
+                        Timer(
+                            Duration.zero,
+                            () => controller.scrollC.jumpTo(
+                                controller.scrollC.position.maxScrollExtent));
+                        return ListView.builder(
+                            controller: controller.scrollC,
+                            itemCount: allChatsBerdua.length,
+                            itemBuilder: (context, index) {
+                              if (index == 0) {
+                                return Column(
+                                  children: [
+                                    SizedBox(
+                                      height: 15,
+                                    ),
+                                    Text(
+                                      '${allChatsBerdua[index]["groupTime"]}',
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.w400,
+                                          color: Colors.grey),
+                                    ),
+                                    itemChat(
+                                      isSender: allChatsBerdua[index]
+                                                  ["pengirim"] ==
+                                              authC.user.value.email
+                                          ? true
+                                          : false,
+                                      msg: "${allChatsBerdua[index]["msg"]}",
+                                      time: "${allChatsBerdua[index]["time"]}",
+                                    ),
+                                  ],
+                                );
+                              } else {
+                                if (allChatsBerdua[index]["groupTime"] ==
+                                    allChatsBerdua[index - 1]["groupTime"]) {
+                                  return itemChat(
+                                    isSender: allChatsBerdua[index]
+                                                ["pengirim"] ==
+                                            authC.user.value.email
+                                        ? true
+                                        : false,
+                                    msg: "${allChatsBerdua[index]["msg"]}",
+                                    time: "${allChatsBerdua[index]["time"]}",
+                                  );
+                                } else {
+                                  return Column(
+                                    children: [
+                                      Text(
+                                        '${allChatsBerdua[index]["groupTime"]}',
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.w400,
+                                            color: Colors.grey),
+                                      ),
+                                      itemChat(
+                                        isSender: allChatsBerdua[index]
+                                                    ["pengirim"] ==
+                                                authC.user.value.email
+                                            ? true
+                                            : false,
+                                        msg: "${allChatsBerdua[index]["msg"]}",
+                                        time:
+                                            "${allChatsBerdua[index]["time"]}",
+                                      ),
+                                    ],
+                                  );
+                                }
+                              }
+                            });
+                      }
+                      return Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    },
                   ),
                 ),
+
+                // child: ListView(
+                //   children: [
+                //     itemChat(msg: "Hallo Alfi", isSender: true),
+                //     itemChat(msg: "iya Hallo juga", isSender: false),
+                //   ],
+                // )
               ),
               Container(
                 margin:
@@ -73,6 +205,10 @@ class ChatRoomView extends GetView<ChatRoomController> {
                       child: TextField(
                         controller: controller.chatC,
                         focusNode: controller.focusNode,
+                        onEditingComplete: () => controller.newChat(
+                            authC.user.value.email!,
+                            Get.arguments as Map<String, dynamic>,
+                            controller.chatC.text),
                         decoration: InputDecoration(
                           prefixIcon: IconButton(
                             onPressed: () {
@@ -169,9 +305,13 @@ class itemChat extends StatelessWidget {
   const itemChat({
     super.key,
     required this.isSender,
+    required this.msg,
+    required this.time,
   });
 
   final bool isSender;
+  final String msg;
+  final String time;
 
   @override
   Widget build(BuildContext context) {
@@ -199,7 +339,7 @@ class itemChat extends StatelessWidget {
             ),
             padding: EdgeInsets.all(15),
             child: Text(
-              "Ini adalah sebuah pesan untukmu",
+              "$msg",
               style: TextStyle(color: Colors.white),
             ),
           ),
@@ -207,7 +347,7 @@ class itemChat extends StatelessWidget {
             height: 4,
           ),
           Text(
-            "18.09 wib",
+            DateFormat('HH:mm').format(DateTime.parse(time).toLocal()),
             style: TextStyle(color: Colors.grey, fontSize: 12),
           ),
         ],
