@@ -1,7 +1,10 @@
+import 'dart:io';
+
 import 'package:avatar_glow/avatar_glow.dart';
 import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
+import 'package:introduction_screen/introduction_screen.dart';
 import 'package:silaturrahmi/app/controllers/auth_controller.dart';
 
 import '../controllers/change_profile_controller.dart';
@@ -103,12 +106,61 @@ class ChangeProfileView extends GetView<ChangeProfileController> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    "no image",
-                    style: TextStyle(fontSize: 16),
+                  GetBuilder<ChangeProfileController>(
+                    builder: (c) => c.pickedImg != null
+                        ? Column(
+                            children: [
+                              Container(
+                                height: 125,
+                                width: 125,
+                                child: Stack(
+                                  children: [
+                                    Container(
+                                      height: 100,
+                                      width: 100,
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(50),
+                                        image: DecorationImage(
+                                          image: FileImage(
+                                            File(c.pickedImg!.path),
+                                          ),
+                                          fit: BoxFit.cover,
+                                        ),
+                                      ),
+                                    ),
+                                    Positioned(
+                                      top: -5,
+                                      right: -10,
+                                      child: IconButton(
+                                        onPressed: () => c.resetImage(),
+                                        icon: Icon(
+                                          Icons.delete,
+                                          color: Colors.blue,
+                                        ),
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ),
+                              TextButton(
+                                  onPressed: () => c
+                                          .uploadImage(authC.user.value.uid!)
+                                          .then((hasilKembalian) {
+                                        if (hasilKembalian != null) {
+                                          authC.updatePhotoProfile(
+                                              hasilKembalian);
+                                        }
+                                      }),
+                                  child: Text("Upload"))
+                            ],
+                          )
+                        : Text(
+                            "no image",
+                            style: TextStyle(fontSize: 16),
+                          ),
                   ),
                   TextButton(
-                    onPressed: () {},
+                    onPressed: () => controller.selectImage(),
                     child: Text(
                       "choose...",
                       style: TextStyle(color: Colors.blue),

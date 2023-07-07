@@ -263,7 +263,7 @@ class AuthController extends GetxController {
     String dateNow = DateTime.now().toIso8601String();
 
     //update authentication
-    users.doc(userCredential!.user!.email).update({
+    await users.doc(userCredential!.user!.email).update({
       "status": status,
       "updatedTime": dateNow,
     });
@@ -278,6 +278,28 @@ class AuthController extends GetxController {
 
     Get.defaultDialog(
         title: "Berhasil", middleText: "Anda sudah merubah profile anda");
+  }
+
+  void updatePhotoProfile(String url) async {
+    CollectionReference users = firebase.collection('users');
+
+    String dateNow = DateTime.now().toIso8601String();
+
+    //update authentication
+    await users.doc(userCredential!.user!.email).update({
+      "photoURL": url,
+      "updatedTime": dateNow,
+    });
+
+    //update model user
+    user.update((user) {
+      user!.photoURL = url;
+      user.lastSignInTime = dateNow;
+    });
+    Get.defaultDialog(
+        title: "Berhasil", middleText: "Anda sudah merubah photo profile anda");
+
+    user.refresh();
   }
 
   //fungsi digunakan untuk menghubungkan 2 orang saat akan memulai chat
