@@ -25,7 +25,6 @@ class SearchFriendView extends GetView<SearchFriendController> {
                     controller.searchFriend(value, authC.user.value.email!),
                 controller: controller.searchC,
                 decoration: InputDecoration(
-                  fillColor: Colors.white,
                   filled: true,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(30),

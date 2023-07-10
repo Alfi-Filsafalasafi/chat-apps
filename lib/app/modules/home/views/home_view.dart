@@ -81,14 +81,17 @@ class HomeView extends GetView<HomeController> {
                                     "${allChat[index].id}",
                                     authC.user.value.email!,
                                     "${allChat[index]["connection"]}"),
-                                leading: CircleAvatar(
-                                  radius: 25,
-                                  backgroundColor: Colors.black12,
+                                leading: Container(
+                                  height: 45,
+                                  width: 45,
                                   child: ClipRRect(
-                                    borderRadius: BorderRadius.circular(100),
+                                    borderRadius: BorderRadius.circular(50),
                                     child: data!["photoURL"] == "noimage"
                                         ? Image.asset("assets/logo/noimage.png")
-                                        : Image.network("${data["photoURL"]}"),
+                                        : Image.network(
+                                            "${data["photoURL"]}",
+                                            fit: BoxFit.cover,
+                                          ),
                                   ),
                                 ),
                                 title: Text(
@@ -133,7 +136,10 @@ class HomeView extends GetView<HomeController> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => Get.toNamed(Routes.SEARCH_FRIEND),
-        child: Icon(Icons.message_rounded),
+        child: Icon(
+          Icons.message_rounded,
+          color: Colors.white,
+        ),
         backgroundColor: Colors.blue[600],
       ),
     );

@@ -8,7 +8,7 @@ import 'package:silaturrahmi/app/data/models/users_model.dart';
 import '../routes/app_pages.dart';
 
 class AuthController extends GetxController {
-  var isSkipintro = false.obs;
+  var isSkipIntro = false.obs;
   var isAuth = false.obs;
 
   //Buat Fungsi login dengan google
@@ -21,18 +21,32 @@ class AuthController extends GetxController {
   FirebaseFirestore firebase = FirebaseFirestore.instance;
 
   Future<void> firstInitialized() async {
+    print("isAuth = $isAuth dan isSkipIntro = $isSkipIntro");
+
     //mengubah isAtuh menjadi true agar auto login
     await autoLogin().then((value) {
       if (value) {
         isAuth.value = true;
       }
     });
+    await skipIntro().then((value) {
+      if (value) {
+        isSkipIntro.value = true;
+      }
+    });
 
+    print("Setelah di check lagi");
+    print("isAuth = $isAuth dan isSkipIntro = $isSkipIntro");
+  }
+
+  Future<bool> skipIntro() async {
     //menguba isSkipIntro menjadi true
     final box = GetStorage();
-    if (box.read('isSkipIntro') != null || box.read('isSkipIntro') == true) {
-      isSkipintro.value = true;
+    if (box.read('skipIntro') != null || box.read('skipIntro') == true) {
+      return true;
     }
+
+    return false;
   }
 
   Future<bool> autoLogin() async {
@@ -55,13 +69,6 @@ class AuthController extends GetxController {
             .then((value) => userCredential = value);
 
         print("User Credential $userCredential");
-        //menyimpan status user bahwa pernah melakukan login, sehingga skip untuk introduction page
-        final box = GetStorage();
-        if (box.read('isSkipIntro') != null) {
-          box.remove('isSkipIntro');
-        }
-        box.write('isSkipIntro', true);
-        print("is skip intro di autoLogin = $isSkipintro");
 
         //masukkan data user ke firebase
         CollectionReference users = firebase.collection('users');
@@ -146,10 +153,10 @@ class AuthController extends GetxController {
 
         //menyimpan status user bahwa pernah melakukan login, sehingga skip untuk introduction page
         final box = GetStorage();
-        if (box.read('isSkipIntro') != null) {
-          box.remove('isSkipIntro');
+        if (box.read('skipIntro') != null) {
+          box.remove('skipIntro');
         }
-        box.write('isSkipIntro', true);
+        box.write('skipIntro', true);
 
         //masukkan data user ke firebase
         CollectionReference users = firebase.collection('users');

@@ -4,17 +4,18 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:silaturrahmi/app/controllers/auth_controller.dart';
 import 'package:silaturrahmi/app/routes/app_pages.dart';
+import 'package:silaturrahmi/main.dart';
 
 import '../controllers/profile_controller.dart';
 
 class ProfileView extends GetView<ProfileController> {
   final authC = Get.find<AuthController>();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          backgroundColor: Colors.transparent,
-          foregroundColor: Colors.black,
+          backgroundColor: Colors.blue,
           elevation: 0,
           title: const Text('ProfileView'),
           centerTitle: true,
@@ -23,7 +24,6 @@ class ProfileView extends GetView<ProfileController> {
               onPressed: () => authC.logout(),
               icon: Icon(
                 Icons.logout,
-                color: Colors.black,
               ),
             ),
           ],
@@ -89,6 +89,7 @@ class ProfileView extends GetView<ProfileController> {
                   ),
                   ListTile(
                     onTap: () => Get.toNamed(Routes.CHANGE_PROFILE),
+                    // onTap: () => print(Get.isDarkMode),
                     leading: Icon(Icons.person_2_outlined),
                     title: Text(
                       "Change Profile",
@@ -97,10 +98,11 @@ class ProfileView extends GetView<ProfileController> {
                     trailing: Icon(Icons.arrow_right),
                   ),
                   ListTile(
-                    onTap: () {},
+                    onTap: () => Get.changeThemeMode(
+                        Get.isDarkMode ? ThemeMode.light : ThemeMode.dark),
                     leading: Icon(Icons.color_lens_outlined),
                     title: Text(
-                      "Change Theme",
+                      "Change Theme nih",
                       style: TextStyle(fontSize: 18),
                     ),
                     trailing: Text(
